@@ -15,4 +15,4 @@ task_name: "eval"
 tags: ["dev"]
 
 # passing checkpoint path is necessary for evaluation
-ckpt_path: ???
+ckpt_path: D:\zjclearning\pythonproject\lightning-hydra-template\logs\train\runs\2023-11-14_12-42-04\checkpoints\epoch_008.ckpt
