@@ -46,15 +46,25 @@ class DiffusionModel(LightningModule):
         self.start_epoch_time = time.time()
 
     #训练过程
-    def training_step(self, data, i) -> torch.Tensor:
-        X, E = data.x, data.edge_attr
-        print("\n--------diffusion_noise_schedule:"+self.diffusion_noise_schedule+"-----------")
-        print("OriginX：")
-        print(X)
-        noisy_data = self.apply_noise(X, E)
-        print("diffusionX:")
-        print(noisy_data.float())
-        loss = self.calculate_loss(X, E)
+    def training_step(
+            self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
+        """Perform a single training step on a batch of data from the training set.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target
+            labels.
+        :param batch_idx: The index of the current batch.
+        :return: A tensor of losses between model predictions and targets.
+        """
+        loss, preds, targets = self.model_step(batch)
+
+        # update and log metrics
+        self.train_loss(loss)
+        self.train_acc(preds, targets)
+        self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
+
+        # return loss or backpropagation will fail
         return loss
 
     def calculate_loss(self, X, E) -> torch.Tensor:

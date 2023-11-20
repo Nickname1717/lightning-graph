@@ -3,7 +3,7 @@ _target_: src.models.cora_module.CoraLitModule
 optimizer:
   _target_: torch.optim.Adam
   _partial_: true
-  lr: 0.001
+  lr: 0.01
   weight_decay: 0.0
 
 scheduler:
@@ -13,11 +13,22 @@ scheduler:
   factor: 0.1
   patience: 10
 
-net:
-  _target_: src.models.components.gnn.GNN
+net1:
+  _target_: src.models.components.gcn.GCN
   input_size: 1433
   hidden_size: 64
+  output_size: 28
+net2:
+  _target_: src.models.components.gat.GAT
+  input_size: 28
+  hidden_size: 64
   output_size: 7
+decoder:
+  _target_: src.models.components.mlp.MLP
+  input_size: 7
+  hidden_size: 64
+  output_size: 7
+
 
 # compile model for faster training with pytorch 2.0
 compile: false

@@ -2,3 +2,4 @@ _target_: src.data.diffusion_datamodule.DiffusionDataModule
 num_nodes: 10
 num_features: 4
 num_edge_features: 5
+proprecess: 'proprecess_addone'

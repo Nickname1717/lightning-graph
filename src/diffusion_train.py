@@ -39,8 +39,8 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
 
-    # log.info(f"Instantiating datamodule <{cfg.data._target_}>")
-    # datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
+    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
+    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
 
 
@@ -91,14 +91,14 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     return metric_dict, object_dict
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="diff_train.yaml")
+@hydra.main(version_base="1.3", config_path="../configs", config_name="cora_train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
 
     #初始化dataloader
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
     #初始化model
     model: LightningModule = hydra.utils.instantiate(cfg.model)
-    trainer=Trainer(max_epochs=2)
+    trainer=Trainer(max_epochs=500)
     #训练，加载model和dataloader
     trainer.fit(model=model,datamodule=datamodule)
 

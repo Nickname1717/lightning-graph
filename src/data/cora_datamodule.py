@@ -1,52 +1,53 @@
 import torch
-from torch_geometric.data import DataLoader
+from torch_geometric.data import Batch
 from torch_geometric.datasets import Planetoid
 from torch.utils.data import random_split
+from torch_geometric.loader import DataListLoader
+from torch_geometric.loader.dense_data_loader import collate_fn
 from torch_geometric.transforms import NormalizeFeatures
-
+from src.data.components import custom_preprocess
 from lightning import LightningDataModule
+from torch_geometric.loader.dense_data_loader import collate_fn
+from torch.utils.data import ConcatDataset, Dataset, random_split
+from src.data.components import proprecess_addone
+from src.data.components import proprecess_addtwo
+from torch_geometric.data import DataLoader
+
 
 class CoraDataModule(LightningDataModule):
-    def __init__(self, data_dir='data', batch_size=64, num_workers=4, validation_ratio=0.1, test_ratio=0.1):
+    def __init__(self, data_dir='data', batch_size=64, num_workers=15,proprecess='proprecess_addone'):
         super(CoraDataModule, self).__init__()
 
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.num_workers = num_workers
-        self.validation_ratio = validation_ratio
-        self.test_ratio = test_ratio
+
 
         self.transform = NormalizeFeatures()
-
+        self.proprecess = proprecess
     def prepare_data(self):
-        # This method is used to download and preprocess the dataset.
-        # Since we are using the Planetoid dataset, it is not necessary to implement anything here.
         Planetoid(root=self.data_dir, name='Cora', transform=self.transform)
-
+    #预处理
     def setup(self, stage=None):
-        # This method is used to split the dataset into training, validation, and test sets.
-        dataset = Planetoid(root=self.data_dir, name='Cora', transform=self.transform)
-        num_data = len(dataset.x)
 
-        # Calculate the number of samples for validation and test sets
-        num_val = int(self.validation_ratio * num_data)
-        num_test = int(self.test_ratio * num_data)
+        dataset = Planetoid(root=self.data_dir, name='Cora', transform=self.transform)
+        dataset.data.x = custom_preprocess(dataset.data.x, self.proprecess)
+
+
 
         # Split the dataset
-        self.train_dataset, self.val_dataset, self.test_dataset = random_split(
-            dataset, [num_data - num_val - num_test, num_val, num_test])
+        self.train_dataset=dataset
+
+
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-    def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
 
-    def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
 
 
 
 
 if __name__ == "__main__":
-    _ = CoraDataModule().setup()
+
+    _ = CoraDataModule.setup()
