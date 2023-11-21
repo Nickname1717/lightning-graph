@@ -69,7 +69,7 @@
 
 ## 3.data模块
 
-data配置如下，
+data模块配置如下
 
 ```
 data:
@@ -80,7 +80,7 @@ data:
   proprecess: 'addone'#用于预处理，函数名
 ```
 
-datamodule文件如下：
+datamodule文件存放在src\data文件夹下，内容如下所示：
 
 ![image-20231121160619098](image/image-20231121160619098.png)
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
 ## 3.model模块
 
-model配置如下：
+model模块配置如下：
 
 ```
 model:
