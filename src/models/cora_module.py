@@ -6,11 +6,14 @@ from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification.accuracy import Accuracy
 from torch_geometric.nn import GCNConv
 import torch.nn.functional as F
+
+from src.models.components import  BackboneCombinedModel, HeadCombinedModel
+
+
 class CoraLitModule(LightningModule):
     def __init__(
         self,
-        net1,
-        net2,
+        net,
         decoder,
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
@@ -22,9 +25,10 @@ class CoraLitModule(LightningModule):
 
         self.save_hyperparameters(logger=False)
 
-        self.net1=net1
-        self.net2=net2
-        self.decoder=decoder
+        #backbone结合模块
+        self.model=BackboneCombinedModel(net)
+        #分类头模块
+        self.head=HeadCombinedModel(decoder)
         # loss function
         self.criterion = torch.nn.CrossEntropyLoss()
 
@@ -40,12 +44,11 @@ class CoraLitModule(LightningModule):
 
         self.val_acc_best = MaxMetric()
 
-    def forward(self, x: torch.Tensor,edge_index:torch.Tensor):
+    def forward(self, data):
 
-        gcn_output=self.net1(x,edge_index)
-        gat_output=self.net2(gcn_output,edge_index)
+        net_output=self.model(data)
 
-        return self.decoder(gat_output)
+        return self.head(net_output)
 
     def on_train_start(self) -> None:
         self.val_loss.reset()
@@ -53,13 +56,13 @@ class CoraLitModule(LightningModule):
         self.val_acc_best.reset()
 
     def model_step(
-            self, batch: Tuple[torch.Tensor, torch.Tensor]
+            self, data: Tuple[torch.Tensor, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        x, y, train_mask,val_mask, edge_index = batch.x, batch.y, batch.train_mask,batch.val_mask, batch.edge_index
+        x, y, train_mask,val_mask, edge_index = data.x, data.y, data.train_mask,data.val_mask, data.edge_index
 
 
 
-        logits = self.forward(x, edge_index)
+        logits = self.forward(data)
 
         loss = self.criterion(logits[train_mask], y[train_mask])
         preds = torch.argmax(logits, dim=1)
