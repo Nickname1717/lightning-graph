@@ -3,3 +3,7 @@ data_dir: ${paths.data_dir}
 batch_size: 64 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
 num_workers: 0
 proprecess: 'addone'
+
+
+#配置文件一起
+#rdm

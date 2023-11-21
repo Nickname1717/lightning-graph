@@ -15,34 +15,27 @@ from torch_geometric.data import DataLoader
 
 
 class CoraDataModule(LightningDataModule):
-    def __init__(self, data_dir='data', batch_size=64, num_workers=15,proprecess='proprecess_addone'):
+    def __init__(self, data_dir='data', batch_size=64, num_workers=15,proprecess='addone'):
         super(CoraDataModule, self).__init__()
-
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.num_workers = num_workers
-
-
         self.transform = NormalizeFeatures()
         self.proprecess = proprecess
-    def prepare_data(self):
-        Planetoid(root=self.data_dir, name='Cora', transform=self.transform)
-    #预处理
+
+    #数据准备
     def setup(self, stage=None):
-
         dataset = Planetoid(root=self.data_dir, name='Cora', transform=self.transform)
-        dataset.data.x = custom_preprocess(dataset.data.x, self.proprecess)
-
-
-
-        # Split the dataset
+        #preprecess,根据函数名初始化
+        dataset = custom_preprocess(dataset, self.proprecess)
         self.train_dataset=dataset
-
-
-
+    #dataloader返回
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-
+    def val_dataloader(self):
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+    def test_dataloader(self):
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
 
 
@@ -50,4 +43,6 @@ class CoraDataModule(LightningDataModule):
 
 if __name__ == "__main__":
 
-    _ = CoraDataModule.setup()
+    datamodel = CoraDataModule()
+    datamodel.setup()
+    print(datamodel.train_dataloader)

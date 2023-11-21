@@ -15,6 +15,7 @@ class CoraLitModule(LightningModule):
         self,
         net,
         decoder,
+        loss,
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         compile: bool,
@@ -30,7 +31,7 @@ class CoraLitModule(LightningModule):
         #分类头模块
         self.head=HeadCombinedModel(decoder)
         # loss function
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = loss
 
 
         self.train_acc = Accuracy(task="multiclass", num_classes=7)

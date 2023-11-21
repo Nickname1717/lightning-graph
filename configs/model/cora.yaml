@@ -12,6 +12,9 @@ optimizer:
 #    momentum: 0.9
 #    weight_decay: 0.0005
 
+loss:
+  _target_ : torch.nn.CrossEntropyLoss
+
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
@@ -40,6 +43,7 @@ net:
     input_size: 7
     hidden_size: 28
     output_size: 7
+
 
 decoder:
   mlp:

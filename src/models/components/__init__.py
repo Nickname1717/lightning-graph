@@ -12,7 +12,6 @@ class BackboneCombinedModel(nn.Module):
         super(BackboneCombinedModel, self).__init__()
         self.models = nn.ModuleList()
         for model_name, config in model_config.items():
-
             self.models.append(config)
 
 

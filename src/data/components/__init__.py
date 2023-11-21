@@ -9,10 +9,12 @@ def custom_preprocess(data, preprocess_type):
 
     raise ValueError(f"Unsupported preprocess_type: {preprocess_type}")
 
-def proprecess_addone(data):
-    return data + 1
+def proprecess_addone(dataset):
+    dataset.data.x+=1
+    return dataset
 
-def proprecess_addtwo(data):
-    return data + 2
+def proprecess_addtwo(dataset):
+    dataset.data.x+=1
+    return dataset
 
 
