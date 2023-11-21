@@ -100,7 +100,7 @@ def main(cfg: DictConfig) -> Optional[float]:
     model: LightningModule = hydra.utils.instantiate(cfg.model)
     trainer=Trainer(max_epochs=500)
     #训练，加载model和dataloader
-    trainer.fit(model=model,datamodule=datamodule,ckpt_path=cfg.ckpt_path)
+    trainer.fit(model=model,datamodule=datamodule)
 
 
 if __name__ == "__main__":

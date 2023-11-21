@@ -15,39 +15,38 @@ data:
   proprecess: 'addone'
 model:
   _target_: src.models.cora_module.CoraLitModule
+  #优化器
   optimizer:
     _target_: torch.optim.Adam
     _partial_: true
     lr: 0.01
     weight_decay: 0.0
-
+  #损失函数
   loss:
     _target_: torch.nn.CrossEntropyLoss
-
+  #学习率调整
   scheduler:
     _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
     _partial_: true
     mode: min
     factor: 0.1
     patience: 10
-
-  net:
-    gcn:
-      _target_: src.models.components.gcn.GCN
-      input_size: 1433
-      hidden_size: 64
-      output_size: 7
-    gat:
-      _target_: src.models.components.gat.GAT
-      input_size: 7
-      hidden_size: 28
-      output_size: 7
-  decoder:
-    mlp:
-      _target_: src.models.components.mlp.MLP
-      input_size: 7
-      hidden_size: 64
-      output_size: 7
+  #网络backbone
+  gcn:
+    _target_: src.models.components.gcn.GCN
+    input_size: 1433
+    hidden_size: 64
+    output_size: 7
+  gat:
+    _target_: src.models.components.gat.GAT
+    input_size: 7
+    hidden_size: 28
+    output_size: 7
+  mlp:
+    _target_: src.models.components.mlp.MLP
+    input_size: 7
+    hidden_size: 64
+    output_size: 7
 
 
 
@@ -66,7 +65,7 @@ train: True
 test: null
 
 # simply provide checkpoint path to resume training
-ckpt_path: ${paths.root_dir}\ckpt\
+ckpt_path: null
 
 # seed for random number generators in pytorch, numpy and python.random
 seed: null

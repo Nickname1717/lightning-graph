@@ -97,3 +97,66 @@ if __name__ == "__main__":
 可以看到输出：
 
 ![image-20231121160716486](image/image-20231121160716486.png)
+
+## 3.model模块
+
+model配置如下：
+
+```
+model:
+  _target_: src.models.cora_module.CoraLitModule
+  #优化器
+  optimizer:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 0.01
+    weight_decay: 0.0
+  #损失函数
+  loss:
+    _target_: torch.nn.CrossEntropyLoss
+  #学习率调整
+  scheduler:
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    _partial_: true
+    mode: min
+    factor: 0.1
+    patience: 10
+  #网络backbone
+  gcn:
+    _target_: src.models.components.gcn.GCN#定义好的backbnone类
+    input_size: 1433
+    hidden_size: 64
+    output_size: 7
+  gat:
+    _target_: src.models.components.gat.GAT#定义好的backbnone类
+    input_size: 7
+    hidden_size: 28
+    output_size: 7
+  mlp:
+    _target_: src.models.components.mlp.MLP#定义好的backbnone类
+    input_size: 7
+    hidden_size: 64
+    output_size: 7
+```
+
+自定义的backbone模型存放在src\models\compoents文件夹下，并按照以上方式在yaml中配置：
+
+![image-20231121173403478](image/image-20231121173403478.png)
+
+module文件位于src\models文件夹下，是定义模型训练的主要模块，各主要方法介绍如下：
+
+初始化函数init，初始化配置文件里的函数和模型，以及一些自定义的参数。
+
+![image-20231121174928370](image/image-20231121174928370.png)
+
+主要训练函数包含两个，train_step和configure_optimizers（这俩是必须要有的，训练过程和更新）。
+
+![image-20231121175726536](image/image-20231121175726536.png)
+
+## 4.训练
+
+训练train.py在src文件夹下，如下：
+
+![image-20231121180738477](image/image-20231121180738477.png)
+
+这里使用Train.fit函数，在model方法里的train_step函数接收到的data就是datamoule模块返回的dataloader中的batch,简化了训练过程。
