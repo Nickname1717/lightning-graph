@@ -5,5 +5,3 @@ num_workers: 0
 proprecess: 'addone'
 
 
-#配置文件一起
-#rdm

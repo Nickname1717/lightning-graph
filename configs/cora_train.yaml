@@ -6,6 +6,9 @@ defaults:
   - paths: default
   - extras: default
   - hydra: default
+  - hparams_search: null
+  - optional local: default
+  - debug: null
 #只需要配置data和model
 data:
   _target_: src.data.cora_datamodule.CoraDataModule

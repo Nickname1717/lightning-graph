@@ -1,17 +1,13 @@
-import torch
-from torch_geometric.datasets import Planetoid
-from torch_geometric.data import DataLoader
+def test_writing_to_directory(directory_path):
+    try:
+        # 尝试在指定目录中创建一个文本文件并写入数据
+        with open(directory_path + "/test_file.txt", "w") as file:
+            file.write("This is a test.")
+        print("写入成功！")
+    except Exception as e:
+        print(f"写入失败: {e}")
 
-dataset = Planetoid(root='data', name='Cora')
+# 请替换成你想要测试的目录路径
+directory_to_test = "D:/zjclearning/pythonproject/lightning-graph/ckpt"
 
-
-print("Number of samples in the dataset:", len(dataset))
-
-batch_size = 32
-data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-
-for batch in data_loader:
-    print("Batch size:", batch.num_graphs)
-    print(batch)
-    break
-
+test_writing_to_directory(directory_to_test)

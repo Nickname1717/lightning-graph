@@ -74,19 +74,19 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     train_metrics = trainer.callback_metrics
 
-    if cfg.get("test"):
-        log.info("Starting testing!")
-        ckpt_path = trainer.checkpoint_callback.best_model_path
-        if ckpt_path == "":
-            log.warning("Best ckpt not found! Using current weights for testing...")
-            ckpt_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
-        log.info(f"Best ckpt path: {ckpt_path}")
-
-    test_metrics = trainer.callback_metrics
+    # if cfg.get("test"):
+    #     log.info("Starting testing!")
+    #     ckpt_path = trainer.checkpoint_callback.best_model_path
+    #     if ckpt_path == "":
+    #         log.warning("Best ckpt not found! Using current weights for testing...")
+    #         ckpt_path = None
+    #     trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+    #     log.info(f"Best ckpt path: {ckpt_path}")
+    #
+    # test_metrics = trainer.callback_metrics
 
     # merge train and test metrics
-    metric_dict = {**train_metrics, **test_metrics}
+    metric_dict = {**train_metrics}
 
     return metric_dict, object_dict
 
@@ -94,13 +94,27 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 @hydra.main(version_base="1.3", config_path="../configs", config_name="cora_train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
 
-    #初始化dataloader
-    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
-    #初始化model
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
-    trainer=Trainer(max_epochs=500)
-    #训练，加载model和dataloader
-    trainer.fit(model=model,datamodule=datamodule)
+    # #初始化dataloader
+    # datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
+    # #初始化model
+    # model: LightningModule = hydra.utils.instantiate(cfg.model)
+    # trainer=Trainer(max_epochs=500)
+    # #训练，加载model和dataloader
+    #
+    # trainer.fit(model=model,datamodule=datamodule)
+
+    extras(cfg)
+
+    # train the model
+    metric_dict, _ = train(cfg)
+
+    # safely retrieve metric value for hydra-based hyperparameter optimization
+    metric_value = get_metric_value(
+        metric_dict=metric_dict, metric_name=cfg.get("optimized_metric")
+    )
+
+    # return optimized metric
+    return metric_value
 
 
 if __name__ == "__main__":
