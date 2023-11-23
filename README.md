@@ -80,7 +80,7 @@ data:
   proprecess: 'addone'#用于预处理，函数名
 ```
 
-datamodule文件存放在src\data文件夹下，内容如下所示：
+datamodule文件存放在src\data文件夹下，内容如下所示，setup函数用于加载dataset，然后包装成dataloader返回：
 
 ![image-20231121160619098](image/image-20231121160619098.png)
 
